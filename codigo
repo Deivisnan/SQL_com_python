@@ -1,0 +1,63 @@
+import sqlite3
+from pathlib import Path
+
+# Obtém o caminho do diretório do script atual
+ROOT_PATH = Path(__file__).parent
+
+# Conecta ao banco de dados ou cria um novo se não existir
+conexao = sqlite3.connect(ROOT_PATH / "meu_banco.sqlite")
+
+# Cria um cursor para executar comandos SQL
+cursor = conexao.cursor()
+
+# Define a declaração SQL corrigida para criar a tabela Cliente
+'''create_table_sql = """
+    CREATE TABLE IF NOT EXISTS Cliente (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome VARCHAR(100),
+        email VARCHAR(150)
+    )
+""" '''
+
+
+def criar_tabela(conexao, cursor):
+    
+    execute = cursor.execute("CREATE TABLE IF NOT EXISTS Cliente (id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR(100), email VARCHAR(150));")
+    conexao.commit()
+
+def inserir_dados(conexao, cursor,nome,email,id):
+    if id is None:
+        data = (nome, email)
+        cursor.execute("INSERT INTO Cliente (nome, email) VALUES (?, ?);", data)
+    else:
+        data = (id, nome, email)
+        cursor.execute("INSERT INTO Cliente (id, nome, email) VALUES (?, ?, ?);", data)
+    conexao.commit()
+    
+def atualizar_dados(conexao, cursor, nome, email,id):
+    # Atualiza os dados na tabela Cliente
+    data = (nome, email, id)
+    cursor.execute("UPDATE Cliente SET nome = ?, email = ? WHERE id = ?;", data)
+    conexao.commit()
+
+def verificar_dados():
+    # Verifica se os dados foram inseridos
+    cursor.execute("SELECT * FROM Cliente")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+
+
+def excluir_registro(conexao,cursor,id):
+    data = (id,)    
+    cursor.execute("DELETE FROM Cliente WHERE id = ?;", data)
+    conexao.commit()
+    
+
+verificar_dados()
+
+#excluir_registro()
+
+#atualizar_dados ( conexao, cursor,"ana","anaMIl10@gmail.com",8)
+
+inserir_dados(conexao, cursor,"andré","andre5@gmail.com",6)
